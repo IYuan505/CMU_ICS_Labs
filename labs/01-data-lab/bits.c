@@ -143,7 +143,16 @@ NOTES:
  *   Rating: 1
  */
 int bitXor(int x, int y) {
-  return 2;
+  /* XOR of x and y is equal to (~x)&y | x&(~y) 
+   * OR of x and y is equal to ~((~x)&(~y))
+   * Substitude the x and y in the OR operation with (~x)&y and x&(~y),
+   * we get the result of x^y back.
+   */
+  int not_x_and_y = (~x)&y;
+  int not_y_and_x = x&(~y);
+  int and_of_not_two = (~not_x_and_y)&(~not_y_and_x);
+  int xor = ~and_of_not_two;
+  return xor;
 }
 /* 
  * tmin - return minimum two's complement integer 
@@ -152,9 +161,13 @@ int bitXor(int x, int y) {
  *   Rating: 1
  */
 int tmin(void) {
-
-  return 2;
-
+  /* tmin is 0x80000000
+   * one in two's complement is 0x00000001
+   * right shift one by 31 bits, we have 0x80000000, which is tmin
+   */
+  int one = 1;
+  int minimum = one<<31;
+  return minimum;
 }
 //2
 /*
@@ -165,7 +178,17 @@ int tmin(void) {
  *   Rating: 1
  */
 int isTmax(int x) {
-  return 2;
+  /* tmax is 0x7fffffff
+   * if x is tmax, x+x=-2, and we also have to check x!=-1
+   */
+  int x_plus_x = x+x;
+  int minus_one = ~0;
+  int minus_two = minus_one+minus_one;
+  int is_minus_one = !(x^minus_one);
+  int is_not_minus_one = !is_minus_one;
+  int sum_is_minus_two = !(x_plus_x^minus_two);
+  int is_tmax = sum_is_minus_two&is_not_minus_one;
+  return is_tmax;
 }
 /* 
  * allOddBits - return 1 if all odd-numbered bits in word set to 1
@@ -176,7 +199,7 @@ int isTmax(int x) {
  *   Rating: 2
  */
 int allOddBits(int x) {
-  return 2;
+  return 0;
 }
 /* 
  * negate - return -x 
