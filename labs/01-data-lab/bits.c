@@ -1,4 +1,5 @@
 /* 
+  i/printf("Positive part: %x\n", positive_part);
  * CS:APP Data Lab 
  * 
  * <Please put your name and userid here>
@@ -199,7 +200,21 @@ int isTmax(int x) {
  *   Rating: 2
  */
 int allOddBits(int x) {
-  return 0;
+  /* First, I construct the all_odd_number: 0xAAAAAAAA
+   * If all the odd bits in x are 1s, the xor result with 0xAAAAAAAA will result all
+   * zero in the odd bits.
+   * No matter what remain in the even bits, the xor result of the previous step and 0xAAAAAAAA
+   * will be 0x00000000 if all odd-numbered bits in word set to 1.
+   * Otherwise, return false.
+   */
+  int AA = 0xAA;
+  int AAAA = (AA<<8)|AA;
+  int AAAAAA = (AAAA<<8)|AA;
+  int AAAAAAAA = (AAAAAA<<8)|AA;
+  int x_on_odd_bits = x^AAAAAAAA;
+  int x_intersection_A = x_on_odd_bits&AAAAAAAA;
+  int all_odd = !x_intersection_A;
+  return all_odd;
 }
 /* 
  * negate - return -x 
@@ -209,7 +224,10 @@ int allOddBits(int x) {
  *   Rating: 2
  */
 int negate(int x) {
-  return 2;
+  /* We have x + ~x = -1, so -x = ~x + 1
+   */
+  int minus_x = ~x+1;
+  return minus_x;
 }
 //3
 /* 
@@ -222,7 +240,17 @@ int negate(int x) {
  *   Rating: 3
  */
 int isAsciiDigit(int x) {
-  return 2;
+  /* If the given x is within the range, -x + 0x2F will be negative,
+   * and -x + 0x39 will be positive (including zero).
+   * All other outputs are not within the range.
+   */
+  int minus_x = ~x+1;
+  int minus_x_plus_0 = minus_x+0x2F;
+  int minus_x_plus_9 = minus_x+0x39;
+  int one_neg = (minus_x_plus_0>>31)&1;
+  int one_pos = !(minus_x_plus_9>>31);
+  int within_range = one_pos&one_neg;
+  return within_range;
 }
 /* 
  * conditional - same as x ? y : z 
@@ -232,7 +260,18 @@ int isAsciiDigit(int x) {
  *   Rating: 3
  */
 int conditional(int x, int y, int z) {
-  return 2;
+  /* First, findout the !x. This outputs 0 or 1.
+   * We want 0 or 1 in full-form, which means 0 to 0x00000000, 1 to 0xffffffff.
+   * We are able to get the full form by computing the -condition = ~condition+1
+   * Next, we could use the full form conditon and take the intersection of y and z.
+   * If one condition is 0x00000000, the other would be 0xffffffff.
+   * Thus, taking the & operation between the condition and y, z and take '|'
+   * between them will give the target return value.
+   */
+  int not_condition = !x;
+  int not_condition_full_form = ~not_condition+1;
+  int return_value = ((~not_condition_full_form)&y)|(not_condition_full_form&z);
+  return return_value;
 }
 /* 
  * isLessOrEqual - if x <= y  then return 1, else return 0 
@@ -242,7 +281,22 @@ int conditional(int x, int y, int z) {
  *   Rating: 3
  */
 int isLessOrEqual(int x, int y) {
-  return 2;
+  /* First, check the signs of two nubmers, if x is neg and y is pos, return 1.
+   * If x is pos and y is neg, return 0.
+   * Else, continue checking.
+   * If x is tmin, then return 1.
+   * If they are the same sign, y>=x -> y-x>=0 if x is not tmin.
+   */
+  int neg_x = (x>>31)&1;
+  int pos_y = !(y>>31);
+  int satisfy_one = neg_x|pos_y;
+  int neg_pos = neg_x&pos_y;
+  int x_is_tmin = !((1<<31)^x);
+  int minus_x = ~x+1;
+  int y_minus_x = y+minus_x;
+  int y_minus_x_pos = !(y_minus_x>>31);
+  int return_value = satisfy_one&(neg_pos|x_is_tmin|y_minus_x_pos);
+  return return_value;
 }
 //4
 /* 
@@ -254,7 +308,14 @@ int isLessOrEqual(int x, int y) {
  *   Rating: 4 
  */
 int logicalNeg(int x) {
-  return 2;
+  /* If x is 0, -x has the same sign as x.
+   * But the same equation holds for tmin, thus, we further filter out the tmin case.
+   */
+  int minus_x = ~x+1;
+  int sign_x = x>>31;
+  int x_same_sign_minus_x = (sign_x^(minus_x>>31))+1;
+  int same_sign_but_not_tmin = x_same_sign_minus_x&(sign_x+1);
+  return same_sign_but_not_tmin;
 }
 /* howManyBits - return the minimum number of bits required to represent x in
  *             two's complement
@@ -269,7 +330,59 @@ int logicalNeg(int x) {
  *  Rating: 4
  */
 int howManyBits(int x) {
-  return 0;
+  /* The max operator number is 90, and we have 32 bits in total.
+   * Therefore, it is infeasible to perform a linear operation to check every bit.
+   * In this function, I use the divide-and-conquer method to improve the efficiency.
+   * First, for a fix bit two's complement number, the range of presentation is -2^(k-1) to 2^(k-1)-1.
+   * Thus, we could transform the x into positive by ~x and tell the bits of the positive part.
+   * We have to use the exactly the same bits to present x and ~x.
+   * After we having the positive part, we could check how many bits are in need to represent this number.
+   * Iteratively, we check whether the bits is larger than 16 bits, 8 bits, 4 bits, 2 bits, and 1 bit.
+   * Noted that 0x00000000 needs 1 bit to represent, thus, the starting point of the total bit would be 1.
+   */
+  int sign_x_pos = ~((x>>31)+1)+1;
+  int remaining_part = (sign_x_pos & x) | ((~sign_x_pos) & (~x));
+
+  int total_bit = 1;
+
+  int larger_than_part = remaining_part>>16;
+  int is_larger_than = (~larger_than_part+1)>>31;
+  int is_smaller_than = ~is_larger_than;
+  // If number is larger than 16 bits, check the first 16 bits, otherwise, check the last 16 bits.
+  remaining_part = (is_larger_than & larger_than_part) | (is_smaller_than & remaining_part & ((0xFF<<8)|0xFF));
+  total_bit = total_bit + (16&is_larger_than);
+
+  larger_than_part = remaining_part>>8;
+  is_larger_than = (~larger_than_part+1)>>31;
+  is_smaller_than = ~is_larger_than;
+  remaining_part = (is_larger_than & larger_than_part) | (is_smaller_than & remaining_part & 0xFF);
+  total_bit = total_bit + (8&is_larger_than);
+
+  larger_than_part = remaining_part>>4;
+  is_larger_than = (~larger_than_part+1)>>31;
+  is_smaller_than = ~is_larger_than;
+  remaining_part = (is_larger_than & larger_than_part) | (is_smaller_than & remaining_part & 0xF);
+  total_bit = total_bit + (4&is_larger_than);
+
+  larger_than_part = remaining_part>>2;
+  is_larger_than = (~larger_than_part+1)>>31;
+  is_smaller_than = ~is_larger_than;
+  remaining_part = (is_larger_than & larger_than_part) | (is_smaller_than & remaining_part & 3);
+  total_bit = total_bit + (2&is_larger_than);
+
+  larger_than_part = remaining_part>>1;
+  is_larger_than = (~larger_than_part+1)>>31;
+  is_smaller_than = ~is_larger_than;
+  remaining_part = (is_larger_than & larger_than_part) | (is_smaller_than & remaining_part & 1);
+  total_bit = total_bit + (1&is_larger_than);
+
+  larger_than_part = remaining_part;
+  is_larger_than = (~larger_than_part+1)>>31;
+  is_smaller_than = ~is_larger_than;
+  remaining_part = (is_larger_than & larger_than_part) | (is_smaller_than & remaining_part & 1);
+  total_bit = total_bit + (1&is_larger_than);
+
+  return total_bit;
 }
 //float
 /* 
