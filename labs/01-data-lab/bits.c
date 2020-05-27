@@ -397,7 +397,29 @@ int howManyBits(int x) {
  *   Rating: 4
  */
 unsigned floatScale2(unsigned uf) {
-  return 2;
+  /* First, we get the three component of the float. Sign, exponent and fraction.
+   * If exponent is equal to 0, which means it is the denormalized value. 
+   * Multiplied by 2 is equal to shift fraction by 1.
+   * If exponent is within the range of 1 to 254 (inclusive), it is the normalized value.
+   * Multiplied by 2 is equal to add exponent by 1.
+   * If exponent is 0xff, which means the special value.
+   * If it is infinity, multiply infinity by two is infinity.
+   * If it is NaN, return the input. Thus, for exponent==0xff, just return the input.
+   */
+  int sign = !!(uf>>31);
+  int exp = (uf&0x7f800000)>>23;
+  int frac = (uf&0x7fffff);
+  if(exp==0){
+    unsigned return_value = (sign<<31)|(exp<<23)|(frac<<1);
+    return return_value;
+  }
+  else if(exp<255){
+    unsigned return_value = (sign<<31)|((exp+1)<<23)|(frac);
+    return return_value;
+  }
+  else{
+    return uf;
+  }  
 }
 /* 
  * floatFloat2Int - Return bit-level equivalent of expression (int) f
@@ -412,7 +434,34 @@ unsigned floatScale2(unsigned uf) {
  *   Rating: 4
  */
 int floatFloat2Int(unsigned uf) {
-  return 2;
+  /* First, we get the three components of the float. Sign, exponent and fraction.
+   * If the exponent is larger than or equal to 148, 148-127(bias)=31, is out of the range.
+   * If the exponent is less than or equal to 126, 126-127=-1, is less than 1, return 0.
+   * Else, we have to first find out the real significand M, and right-shift the it by 23 bit.
+   * Next, left-shift it by the number of real exponent.
+   * After getting the value, let's apply the sign bit to it and return back the value.
+   */
+  int sign = !!(uf>>31);
+  int exp = (uf&0x7f800000)>>23;
+  int frac = (uf&0x7fffff);
+  if(exp>=148){
+    return 0x80000000u;
+  }
+  else if (exp<=126){
+    return 0;
+  }
+  else{
+    int real_M = (0x800000|frac);
+    int move = exp-127-23;
+    int return_value;
+    if (move>0)
+      return_value = real_M<<move;
+    else
+      return_value = real_M>>(~move+1);
+    if (sign)
+      return_value = ~return_value+1;
+    return return_value;
+  }
 }
 /* 
  * floatPower2 - Return bit-level equivalent of the expression 2.0^x
@@ -428,5 +477,23 @@ int floatFloat2Int(unsigned uf) {
  *   Rating: 4
  */
 unsigned floatPower2(int x) {
-    return 2;
+    if (x>=128){
+      return 0x7f800000;
+    }
+    else if (x<=-150){
+      return 0;
+    }
+    else{
+      //printf("X: %d\n", x);
+      if (x>=-126){
+        // Normalzied case
+        int exp = x+127;
+        return exp<<23;
+      }
+      else{
+        // Denormalized case
+        int shift = x+149;
+        return 1<<shift;
+      }
+    }
 }
