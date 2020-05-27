@@ -477,23 +477,27 @@ int floatFloat2Int(unsigned uf) {
  *   Rating: 4
  */
 unsigned floatPower2(int x) {
-    if (x>=128){
-      return 0x7f800000;
-    }
-    else if (x<=-150){
-      return 0;
+  /* If x is too large, larger than or equal to 128, is out of the range of float.
+   * If x is too small, smaller than or equal to -150, is less than the smallest float.
+   * If x is in the normalzed case, it will change the exponent part.
+   * If x is in the denormalized case, it will change the fraction part.
+   */
+  if (x>=128){
+    return 0x7f800000;
+  }
+  else if (x<=-150){
+    return 0;
+  }
+  else{
+    if (x>=-126){
+      // Normalzied case
+      int exp = x+127;
+      return exp<<23;
     }
     else{
-      //printf("X: %d\n", x);
-      if (x>=-126){
-        // Normalzied case
-        int exp = x+127;
-        return exp<<23;
-      }
-      else{
-        // Denormalized case
-        int shift = x+149;
-        return 1<<shift;
-      }
+      // Denormalized case
+      int shift = x+149;
+      return 1<<shift;
     }
+  }
 }
